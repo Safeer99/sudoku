@@ -5,7 +5,12 @@ const pauseBtn = document.querySelector('.pause')
 const resumeBtn = document.getElementById('resume')
 const quitBtn = document.getElementById('quit')
 
+const rowSet = new Set();
+const colSet = new Set();
+const boxSet = new Set();
+
 let solution = [];
+let boardArray = [];
 let mode = "easy";
 let numberActivated = false;
 let selectedNumber = 0;
@@ -14,18 +19,6 @@ let time = {
     minutes: 0,
     seconds: 0
 };
-
-let boardArray = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0]
-]
 
 let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -245,14 +238,28 @@ document.getElementById('start').addEventListener('click', () => {
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0]
     ]
+    solution = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0]
+    ]
     tiles.forEach(tile => {
         tile.classList.remove('bold')
         tile.classList.remove('active')
+        tile.style.pointerEvents = 'all'
+    })
+    numbersBtn.forEach(btn => {
+        btn.style.pointerEvents = 'all'
     })
     document.querySelector('.box').classList.add('sideScrollMainPage')
     document.querySelector('.startPage').classList.add('sideScrollStartPage')
     generateSudoku();
-    solution = JSON.parse(JSON.stringify(boardArray));
     switch (mode) {
         case "easy": removeNumbers(25);
             break;
@@ -291,10 +298,45 @@ function checkSudoku() {
     let c = 0;
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
-            if (solution[i][j] !== parseInt(tiles[c++].innerHTML)) {
-                return false;
+            if (tiles[c].innerHTML === '') {
+                solution[i][j] = 0;
+            } else {
+                solution[i][j] = parseInt(tiles[c].innerHTML);
             }
+            c++;
         }
+    }
+    console.log(solution);
+    rowSet.clear();
+    colSet.clear();
+    boxSet.clear();
+    for (let i = 0; i < solution.length; i++) {
+        const row = solution[i];
+
+        for (let j = 0; j < solution[i].length; j++) {
+            const rowNumber = row[j]
+            const columnNumber = solution[j][i]
+            const boxCharacter =
+                solution[3 * Math.floor(i / 3) + Math.floor(j / 3)][((i * 3) % 9) + (j % 3)]
+
+            if (rowNumber !== 0) {
+                if (colSet.has(rowNumber)) return false;
+                colSet.add(rowNumber)
+            } else return false;
+
+            if (columnNumber !== 0) {
+                if (rowSet.has(columnNumber)) return false;
+                rowSet.add(columnNumber)
+            } else return false;
+
+            if (boxCharacter !== 0) {
+                if (boxSet.has(boxCharacter)) return false;
+                boxSet.add(boxCharacter)
+            } else return false;
+        }
+        rowSet.clear();
+        colSet.clear();
+        boxSet.clear();
     }
     return true;
 }

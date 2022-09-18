@@ -271,7 +271,7 @@ button:hover {
 
 .pausePage {
     bottom: 100%;
-    background: var(--tile-color);
+    background: var(--bg-color);
     opacity: 0;
     transition: all 0.4s;
 }
