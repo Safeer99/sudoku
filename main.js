@@ -306,7 +306,6 @@ function checkSudoku() {
             c++;
         }
     }
-    console.log(solution);
     rowSet.clear();
     colSet.clear();
     boxSet.clear();
